@@ -1,0 +1,3 @@
+s3_bucket_name     = "your-existing-bucket-name"
+slack_signing_secret = "your-slack-signing-secret"
+slack_token        = "xoxb-your-slack-bot-token" 
