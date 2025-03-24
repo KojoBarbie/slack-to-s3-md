@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 
 // DynamoDBクライアントの初期化
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const TABLE_NAME = 'slack-to-obsidian-processed-events';
+const TABLE_NAME = 'SlackToObsidianProcessedEvents';
 
 /**
  * イベントが既に処理済みかをチェックし、未処理の場合は処理済みとしてマークする

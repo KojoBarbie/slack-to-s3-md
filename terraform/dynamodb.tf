@@ -1,6 +1,6 @@
 # Slackイベントの重複排除用DynamoDBテーブル
 resource "aws_dynamodb_table" "processed_events" {
-  name           = "slack-to-obsidian-processed-events"
+  name           = "SlackToObsidianProcessedEvents"
   billing_mode   = "PAY_PER_REQUEST"  # 使用量に応じた課金モード
   hash_key       = "event_id"
   
@@ -15,7 +15,7 @@ resource "aws_dynamodb_table" "processed_events" {
   }
   
   tags = {
-    Name        = "slack-to-obsidian-processed-events"
+    Name        = "SlackToObsidianProcessedEvents"
     Environment = "production"
   }
 }
