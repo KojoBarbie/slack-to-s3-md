@@ -131,8 +131,7 @@ exports.handler = async (event) => {
         const messageDate = new Date(parseFloat(timestamp) * 1000);
         const markdownContent = markdownUtils.formatMessageToMarkdown(
           messageText, 
-          userName, 
-          channelName,
+          userName,
           timestamp
         );
         
