@@ -40,6 +40,28 @@ resource "aws_iam_policy" "lambda_s3_policy" {
   })
 }
 
+# LambdaがDynamoDBにアクセスするためのポリシー
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  name        = "slack_to_obsidian_dynamodb_policy"
+  description = "Allow Lambda to access DynamoDB for event deduplication"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Query"
+        ]
+        Effect   = "Allow"
+        Resource = aws_dynamodb_table.processed_events.arn
+      }
+    ]
+  })
+}
+
 # CloudWatchにログを書き込むためのポリシー
 resource "aws_iam_policy" "lambda_logging_policy" {
   name        = "slack_to_obsidian_logging_policy"
@@ -65,6 +87,11 @@ resource "aws_iam_policy" "lambda_logging_policy" {
 resource "aws_iam_role_policy_attachment" "lambda_s3_attachment" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_s3_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_attachment" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs_attachment" {

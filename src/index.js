@@ -2,6 +2,7 @@
 const slackUtils = require('./utils/slack');
 const markdownUtils = require('./utils/markdown');
 const s3Utils = require('./utils/s3');
+const deduplicationUtils = require('./utils/deduplication');
 
 /**
  * Lambdaハンドラー関数
@@ -73,6 +74,24 @@ exports.handler = async (event) => {
         body: JSON.stringify({ success: false, message: 'No event object found' })
       };
     }
+
+    if (!payload.event_id) {
+      console.error('イベントIDがありません。重複検出ができません。');
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ success: false, message: 'No event ID found' })
+      };
+    }
+
+    // イベントが既に処理済みかチェック（未処理の場合のみtrue）
+    const isNewEvent = await deduplicationUtils.checkAndMarkProcessed(payload.event_id);
+    if (!isNewEvent) {
+      // 重複イベントの場合は早期リターン
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ success: true, message: 'Duplicate event skipped' })
+      };
+    }
     
     // メッセージイベントのみを処理
     if (payload.event.type === 'message') {
@@ -113,6 +132,7 @@ exports.handler = async (event) => {
         const markdownContent = markdownUtils.formatMessageToMarkdown(
           messageText, 
           userName, 
+          channelName,
           timestamp
         );
         
