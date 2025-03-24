@@ -14,6 +14,11 @@ resource "aws_iam_role" "lambda_role" {
       }
     ]
   })
+  
+  tags = {
+    Name    = "slack_to_obsidian_lambda_role"
+    Project = "slack-to-obsidian"
+  }
 }
 
 # LambdaがS3バケットにアクセスするためのポリシー
@@ -38,6 +43,11 @@ resource "aws_iam_policy" "lambda_s3_policy" {
       }
     ]
   })
+  
+  tags = {
+    Name    = "slack_to_obsidian_s3_policy"
+    Project = "slack-to-obsidian"
+  }
 }
 
 # LambdaがDynamoDBにアクセスするためのポリシー
@@ -60,6 +70,11 @@ resource "aws_iam_policy" "lambda_dynamodb_policy" {
       }
     ]
   })
+  
+  tags = {
+    Name    = "slack_to_obsidian_dynamodb_policy"
+    Project = "slack-to-obsidian"
+  }
 }
 
 # CloudWatchにログを書き込むためのポリシー
@@ -81,6 +96,11 @@ resource "aws_iam_policy" "lambda_logging_policy" {
       }
     ]
   })
+  
+  tags = {
+    Name    = "slack_to_obsidian_logging_policy"
+    Project = "slack-to-obsidian"
+  }
 }
 
 # ポリシーをロールにアタッチ

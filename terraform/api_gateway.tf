@@ -2,12 +2,22 @@
 resource "aws_apigatewayv2_api" "slack_api" {
   name          = "slack-to-obsidian-api"
   protocol_type = "HTTP"
+  
+  tags = {
+    Name    = "slack-to-obsidian-api"
+    Project = "slack-to-obsidian"
+  }
 }
 
 resource "aws_apigatewayv2_stage" "default" {
   api_id      = aws_apigatewayv2_api.slack_api.id
   name        = "$default"
   auto_deploy = true
+  
+  tags = {
+    Name    = "slack-to-obsidian-default-stage"
+    Project = "slack-to-obsidian"
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_integration" {

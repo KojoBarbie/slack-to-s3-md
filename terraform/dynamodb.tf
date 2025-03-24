@@ -17,5 +17,6 @@ resource "aws_dynamodb_table" "processed_events" {
   tags = {
     Name        = "SlackToObsidianProcessedEvents"
     Environment = "production"
+    Project     = "slack-to-obsidian"
   }
 }

@@ -22,4 +22,9 @@ resource "aws_lambda_function" "slack_to_obsidian" {
       SLACK_TOKEN    = var.slack_token
     }
   }
+  
+  tags = {
+    Name    = "slack-to-obsidian"
+    Project = "slack-to-obsidian"
+  }
 } 
