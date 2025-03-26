@@ -12,4 +12,9 @@ output "lambda_function_name" {
 output "s3_bucket_name" {
   value       = var.s3_bucket_name
   description = "使用しているS3バケットの名前"
+}
+
+output "cloudwatch_dashboard_url" {
+  value       = "https://${var.aws_region}.console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}#dashboards:name=${aws_cloudwatch_dashboard.lambda_monitoring.dashboard_name}"
+  description = "CloudWatchダッシュボードへのURL"
 } 
