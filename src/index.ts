@@ -1,15 +1,16 @@
-// 各モジュールをインポート
-const slackUtils = require('./utils/slack');
-const markdownUtils = require('./utils/markdown');
-const s3Utils = require('./utils/s3');
-const deduplicationUtils = require('./utils/deduplication');
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { SlackEventPayload, LambdaResponse } from './types';
+import * as slackUtils from './utils/slack';
+import * as markdownUtils from './utils/markdown';
+import * as s3Utils from './utils/s3';
+import * as deduplicationUtils from './utils/deduplication';
 
 /**
  * Lambdaハンドラー関数
- * @param {Object} event - Lambda イベントオブジェクト
- * @returns {Object} レスポンスオブジェクト
+ * @param {APIGatewayProxyEvent} event - Lambda イベントオブジェクト
+ * @returns {Promise<APIGatewayProxyResult>} レスポンスオブジェクト
  */
-exports.handler = async (event) => {
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
     // イベントの基本検証
     if (!event || !event.headers) {
@@ -37,7 +38,7 @@ exports.handler = async (event) => {
       };
     }
     
-    let payload;
+    let payload: SlackEventPayload;
     try {
       payload = JSON.parse(event.body);
     } catch (parseError) {
@@ -163,4 +164,4 @@ exports.handler = async (event) => {
       body: JSON.stringify({ error: 'Internal server error' })
     };
   }
-}; 
+};

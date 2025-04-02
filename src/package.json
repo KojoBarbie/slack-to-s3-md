@@ -2,8 +2,11 @@
   "name": "src",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "deploy": "npm run build && zip -r function.zip dist node_modules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,5 +16,10 @@
     "@slack/events-api": "^3.0.1",
     "@slack/web-api": "^7.8.0",
     "aws-sdk": "^2.1692.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.148",
+    "@types/node": "^20.17.30",
+    "typescript": "^5.8.2"
   }
 }

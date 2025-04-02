@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk');
+import * as AWS from 'aws-sdk';
 
 // S3クライアントの初期化
 const s3 = new AWS.S3();
@@ -10,7 +10,7 @@ const s3 = new AWS.S3();
  * @param {Date} messageDate - メッセージの日付
  * @returns {Promise<string>} 保存したS3のキー
  */
-const saveToS3 = async (channelName, messageMarkdown, messageDate) => {
+export const saveToS3 = async (channelName: string, messageMarkdown: string, messageDate: Date): Promise<string> => {
   // 引数の検証と初期値設定
   const safeChannelName = channelName || 'unknown-channel';
   const safeMessageMarkdown = messageMarkdown || '(no content)';
@@ -40,10 +40,10 @@ const saveToS3 = async (channelName, messageMarkdown, messageDate) => {
         Key: s3Key
       }).promise();
       
-      existingContent = existingObject.Body.toString('utf-8');
+      existingContent = existingObject.Body?.toString('utf-8') || '';
     } catch (error) {
       // ファイルが存在しない場合は空文字列のまま
-      if (error.code !== 'NoSuchKey') {
+      if (error instanceof Error && error.name !== 'NoSuchKey') {
         console.error('S3 getObject エラー');
         throw error;
       }
@@ -66,7 +66,3 @@ const saveToS3 = async (channelName, messageMarkdown, messageDate) => {
     throw error;
   }
 };
-
-module.exports = {
-  saveToS3
-}; 
