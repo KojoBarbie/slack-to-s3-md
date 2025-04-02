@@ -16,9 +16,6 @@ export const saveToS3 = async (channelName: string, messageMarkdown: string, mes
   const safeMessageMarkdown = messageMarkdown || '(no content)';
   const safeMessageDate = messageDate instanceof Date ? messageDate : new Date();
   
-  // JSTに変換
-  const jstDate = new Date(safeMessageDate.getTime() + (9 * 60 * 60 * 1000));
-  
   // S3バケット名の検証
   const bucketName = process.env.S3_BUCKET_NAME;
   if (!bucketName) {
@@ -26,7 +23,7 @@ export const saveToS3 = async (channelName: string, messageMarkdown: string, mes
   }
   
   // 日付フォーマット YYYY-MM-DD (JST)
-  const dateString = jstDate.toISOString().split('T')[0];
+  const dateString = safeMessageDate.toISOString().split('T')[0];
   
   // S3のキー（ファイルパス）
   const s3Key = `40_slack_memo/${safeChannelName}/${dateString}.md`;

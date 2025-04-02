@@ -2,12 +2,10 @@
  * メッセージをMarkdownフォーマットに変換する関数
  * @param {string} message - メッセージ本文
  * @param {string} user - ユーザー名
- * @param {string} timestamp - タイムスタンプ
+ * @param {Date} date - 日付オブジェクト
  * @returns {string} Markdown形式のテキスト
  */
-export const formatMessageToMarkdown = (message: string, user: string, timestamp: string): string => {
-  // 日付をフォーマット
-  const date = new Date(parseFloat(timestamp) * 1000);
+export const formatMessageToMarkdown = (message: string, user: string, date: Date): string => { 
   const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
   const formattedTime = date.toISOString().split('T')[1].substring(0, 8); // HH:MM:SS
 

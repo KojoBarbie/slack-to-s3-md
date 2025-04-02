@@ -129,15 +129,16 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
         ]);
         
         // メッセージをMarkdownに変換
-        const messageDate = new Date(parseFloat(timestamp) * 1000);
+        const date = new Date(parseFloat(timestamp) * 1000);
+        const jstDate = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
         const markdownContent = markdownUtils.formatMessageToMarkdown(
           messageText, 
           userName,
-          timestamp
+          jstDate
         );
         
         // S3に保存
-        await s3Utils.saveToS3(channelName, markdownContent, messageDate);
+        await s3Utils.saveToS3(channelName, markdownContent, jstDate);
         
         return {
           statusCode: 200,
