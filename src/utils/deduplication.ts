@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk');
+import * as AWS from 'aws-sdk';
 
 // DynamoDBクライアントの初期化
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
@@ -10,7 +10,7 @@ const TABLE_NAME = 'SlackToObsidianProcessedEvents';
  * @param {number} ttlHours - レコードの有効期間（時間）
  * @returns {Promise<boolean>} 新規イベントの場合はtrue、重複イベントの場合はfalse
  */
-const checkAndMarkProcessed = async (eventId, ttlHours = 24) => {
+export const checkAndMarkProcessed = async (eventId: string, ttlHours: number = 24): Promise<boolean> => {
   if (!eventId) {
     console.error('イベントIDが指定されていません');
     return true; // IDがない場合は重複チェックできないので処理を継続
@@ -33,7 +33,7 @@ const checkAndMarkProcessed = async (eventId, ttlHours = 24) => {
     
     return true; // 新規イベント（処理済みとしてマーク成功）
   } catch (error) {
-    if (error.code === 'ConditionalCheckFailedException') {
+    if (error instanceof Error && error.name === 'ConditionalCheckFailedException') {
       console.error(`重複イベント検出: ${eventId} - 処理をスキップします`);
       return false; // 既に処理済みのイベント
     }
@@ -42,8 +42,4 @@ const checkAndMarkProcessed = async (eventId, ttlHours = 24) => {
     console.error('DynamoDB操作エラー:', error);
     return true; // エラー時は安全側に倒して処理を続行
   }
-};
-
-module.exports = {
-  checkAndMarkProcessed
 }; 

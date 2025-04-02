@@ -1,15 +1,16 @@
-const crypto = require('crypto');
-const { WebClient } = require('@slack/web-api');
+import * as crypto from 'crypto';
+import { WebClient } from '@slack/web-api';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 // Slack Web APIクライアントの初期化（必要に応じて）
-let slackClient;
+let slackClient: WebClient | null = null;
 
 /**
  * Slackリクエストの署名を検証する関数
- * @param {Object} event - Lambda イベントオブジェクト
+ * @param {APIGatewayProxyEvent} event - Lambda イベントオブジェクト
  * @returns {boolean} 署名が有効な場合はtrue
  */
-const verifySlackRequest = (event) => {
+export const verifySlackRequest = (event: APIGatewayProxyEvent): boolean => {
   // Slackの署名シークレット
   const slackSigningSecret = process.env.SLACK_SECRET;
   
@@ -31,7 +32,7 @@ const verifySlackRequest = (event) => {
   
   // リクエストが古すぎる場合は拒否（5分以上前のリクエスト）
   const currentTime = Math.floor(Date.now() / 1000);
-  if (Math.abs(currentTime - slackRequestTimestamp) > 300) {
+  if (Math.abs(currentTime - parseInt(slackRequestTimestamp, 10)) > 300) {
     console.error('リクエストが古すぎます');
     return false;
   }
@@ -63,7 +64,7 @@ const verifySlackRequest = (event) => {
  * @param {string} channelId - チャンネルID
  * @returns {Promise<string>} チャンネル名、取得できない場合はチャンネルID
  */
-const getChannelName = async (channelId) => {
+export const getChannelName = async (channelId: string): Promise<string> => {
   try {
     // Slackトークンがない場合は早期リターン
     if (!process.env.SLACK_TOKEN) {
@@ -77,8 +78,8 @@ const getChannelName = async (channelId) => {
     
     // チャンネル情報の取得
     const channelInfo = await slackClient.conversations.info({ channel: channelId });
-    if (channelInfo && channelInfo.ok) {
-      return channelInfo.channel.name;
+    if (channelInfo && channelInfo.ok && channelInfo.channel) {
+      return channelInfo.channel.name as string;
     }
     
     return channelId;
@@ -93,7 +94,7 @@ const getChannelName = async (channelId) => {
  * @param {string} userId - ユーザーID
  * @returns {Promise<string>} ユーザー名、取得できない場合はユーザーID
  */
-const getUserName = async (userId) => {
+export const getUserName = async (userId: string): Promise<string> => {
   try {
     // ユーザーIDがない、またはSlackトークンがない場合は早期リターン
     if (!userId || userId === 'unknown_user' || !process.env.SLACK_TOKEN) {
@@ -107,8 +108,8 @@ const getUserName = async (userId) => {
     
     // ユーザー情報の取得
     const userInfo = await slackClient.users.info({ user: userId });
-    if (userInfo && userInfo.ok) {
-      return userInfo.user.real_name || userInfo.user.name || userId;
+    if (userInfo && userInfo.ok && userInfo.user) {
+      return (userInfo.user.real_name as string) || (userInfo.user.name as string) || userId;
     }
     
     return userId;
@@ -116,10 +117,4 @@ const getUserName = async (userId) => {
     console.error('ユーザー情報の取得エラー');
     return userId; // エラーの場合はユーザーIDをそのまま返す
   }
-};
-
-module.exports = {
-  verifySlackRequest,
-  getChannelName,
-  getUserName
 }; 
