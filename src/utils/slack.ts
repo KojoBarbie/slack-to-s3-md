@@ -117,4 +117,4 @@ export const getUserName = async (userId: string): Promise<string> => {
     console.error('ユーザー情報の取得エラー');
     return userId; // エラーの場合はユーザーIDをそのまま返す
   }
-}; 
+};

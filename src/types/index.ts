@@ -38,4 +38,4 @@ export function isSlackEventPayload(obj: any): obj is SlackEventPayload {
     typeof obj === 'object' &&
     typeof obj.type === 'string'
   );
-} 
+}

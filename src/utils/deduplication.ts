@@ -42,4 +42,4 @@ export const checkAndMarkProcessed = async (eventId: string, ttlHours: number = 
     console.error('DynamoDB操作エラー:', error);
     return true; // エラー時は安全側に倒して処理を続行
   }
-}; 
+};

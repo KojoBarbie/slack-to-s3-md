@@ -65,4 +65,4 @@ export const saveToS3 = async (channelName: string, messageMarkdown: string, mes
     console.error('S3保存エラー:', error);
     throw error;
   }
-}; 
+};

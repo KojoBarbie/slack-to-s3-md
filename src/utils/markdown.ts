@@ -13,4 +13,4 @@ export const formatMessageToMarkdown = (message: string, user: string, timestamp
 
   // Markdownフォーマットでメッセージを整形
   return `${user} (${formattedDate} ${formattedTime})\n${message}\n\n----------\n\n`;
-}; 
+};
