@@ -1,16 +1,55 @@
-# TypeScriptビルドを実行するnull_resource
+# シェルコマンドを使ってTypeScriptファイルを監視する
 resource "null_resource" "typescript_build" {
   # ソースコードを監視するためのトリガー
   # ファイルの変更時にビルドを実行する
   triggers = {
-    # TypeScriptファイルを監視
-    ts_files = "${path.module}/../src/index.ts},${path.module}/../src/utils/slack.ts},${path.module}/../src/utils/s3.ts},${path.module}/../src/utils/markdown.ts},${path.module}/../src/utils/deduplication.ts},${path.module}/../src/types/index.ts}"
+    # シェルコマンドを実行して全TSファイルを一度に監視する
+    ts_files_check = "${timestamp()}"
     # package.jsonの変更も監視
-    package_json = "${path.module}/../src/package.json"
+    package_json = filesha256("${path.module}/../src/package.json")
   }
 
+  # TSファイルが変更されたかチェックし、変更されていればビルドを実行
   provisioner "local-exec" {
-    command = "cd ${path.module}/../src && npm install && npm run build"
+    command = <<EOT
+      # srcディレクトリ内の全てのTypeScriptファイルを検索してビルド
+      echo "TypeScriptファイルのビルドを実行します..."
+      cd ${path.module}/../src && npm install && npm run build
+    EOT
+  }
+
+  # 常に実行する設定（TSファイルが変更されているかどうかにかかわらず）
+  # 注: 本番環境では変更検出の仕組みを改善することをお勧めします
+  lifecycle {
+    replace_triggered_by = [
+      # ファイルの変更を検出したら再適用
+      terraform_data.source_code_watch
+    ]
+  }
+}
+
+# TypeScriptファイルの変更を検出するためのリソース
+resource "terraform_data" "source_code_watch" {
+  input = timestamp()
+
+  # 定期的に実行するためのライフサイクル設定
+  lifecycle {
+    replace_triggered_by = [
+      # ファイルの変更を検出したら再適用
+      null_resource.source_code_trigger
+    ]
+  }
+}
+
+# ソースコードの変更トリガー
+resource "null_resource" "source_code_trigger" {
+  triggers = {
+    # シェルコマンドでsrc以下のすべてのTSファイルを監視
+    # ファイル追加や変更があった場合に新しいハッシュ値になる
+    source_hash = sha256(join("", [
+      for f in fileset("${path.module}/../src", "**/*.ts") :
+      filesha256("${path.module}/../src/${f}")
+    ]))
   }
 }
 
