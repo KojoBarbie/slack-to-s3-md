@@ -20,11 +20,8 @@ data "archive_file" "lambda_zip" {
   source_dir  = "${path.module}/../src"
   output_path = "${path.module}/lambda_function.zip"
   
-  # TypeScriptビルド成果物とnode_modulesのみを含める
   excludes = [
-    "*.ts",
     "*.js.map",
-    "tsconfig.json",
     ".git",
     ".gitignore",
     "*.log"
