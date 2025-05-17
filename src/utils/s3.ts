@@ -26,7 +26,7 @@ export const saveToS3 = async (channelName: string, messageMarkdown: string, mes
   const dateString = safeMessageDate.toISOString().split('T')[0];
   
   // S3のキー（ファイルパス）
-  const s3Key = `40_slack_memo/${safeChannelName}/${dateString}.md`;
+  const s3Key = `20_memo/23_slack_memo/${safeChannelName}/${dateString}.md`;
   
   try {
     // ファイルが既に存在するか確認
